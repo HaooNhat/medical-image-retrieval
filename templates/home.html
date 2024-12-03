@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<div class="body">
+    <div class="container">
+        <div class="row">
+            <h1>Medical Image Retrieval</h1>
+        </div>
+        <form method="POST" id="submitForm">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <h2>Query Image</h2>
+
+                    <img src="{% static 'image/profile_placeholder.webp' %}" id="verify-image-1" class="verify-image"
+                        alt="Verifying Image 1">
+
+                    <label for="input-file-1" class="label-image">Upload image 1</label>
+
+                    <input type="file" accept="image/jpeg, image/png, image/jpg" id="input-file-1" class="input-image"
+                        required>
+                </div>
+            </div>
+
+            <div class="row">
+                <p id="error-message" class="error-message">Error message</p>
+            </div>
+            <div class="row">
+                <!-- <label for="reset-button" class="label-verify">Reset</label>
+
+                <input type="reset" id="reset-button"> -->
+
+                <!-- <div class="col">
+                    <h3>Choose your model:</h3>
+
+                    <input type="radio" name="model_type" id="model_arcface" value="model_arcface" checked>
+                    <label for="model_arcface">Arcface model</label>
+
+                    <br>
+
+                    <input type="radio" name="model_type" id="model_facenet" value="model_facenet">
+                    <label for="model_facenet">Facenet model</label>
+                </div> -->
+
+                <div class="col">
+                    <label for="verify-button" class="label-verify">Query</label>
+
+                    <input type="submit" id="verify-button" class="verify-button">
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+
+    let verifyImage_1 = document.getElementById("verify-image-1");
+    let inputFile_1 = document.getElementById("input-file-1");
+
+    inputFile_1.onchange = () => {
+        verifyImage_1.src = URL.createObjectURL(inputFile_1.files[0]);
+    }
+
+    let submitForm = document.getElementById("submitForm");
+    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    let errorMessage = document.getElementById("error-message");
+
+    errorMessage.style.opacity = 0;
+
+    submitForm.addEventListener("submit", e => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('image_1', inputFile_1.files[0]);
+
+        fetch("/api/query", {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            body: formData,
+        }).catch(error => {
+            console.error(error);
+        });
+    })
+
+</script>
+
+{% endblock content %}
