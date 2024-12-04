@@ -126,7 +126,7 @@
             //     <img src="https://via.placeholder.com/300x300.png?text=${result.image_filename}" alt="${result.image_filename}">
             // `;
             resultItem.innerHTML = `
-                <img src="/static/image/${result.image_filename}" alt="${result.image_filename} class=\"verify-image\"">
+                <img src="/static/image/${result.image_filename}" alt="${result.image_filename}" class="verify-image">
             `;
             resultItem.addEventListener('click', () => showDetails(result));
             resultsContainer.appendChild(resultItem);
