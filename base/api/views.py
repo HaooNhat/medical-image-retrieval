@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from .ImageDatabase import example_search
+import json
 
 
 def getRoutes(request):
@@ -11,5 +12,5 @@ def getRoutes(request):
 
 
 def query(request):
-    example_search()
-    pass
+    res = example_search()
+    return JsonResponse(res)

@@ -7,8 +7,8 @@ from pymilvus import MilvusClient
 
 
 class ImageDatabase:
-    rel_path = "vectors.db"
-    abs_path = os.path.abspath(rel_path)
+    # rel_path = "vectors.db"
+    # abs_path = os.path.abspath(rel_path)
     # full_path = os.path.join(abs_path, "vectors.db")
 
     def __init__(self, db_path="vectors.db", device=None):
@@ -31,8 +31,8 @@ class ImageDatabase:
         self.transforms = timm.data.create_transform(**data_config, is_training=False)
 
         # Vector DB
-        # self.client = MilvusClient(uri=db_path)
-        self.client = MilvusClient(uri=self.abs_path)
+        self.client = MilvusClient(uri=db_path)
+        # self.client = MilvusClient(uri=self.abs_path)
         if not self.client.has_collection(collection_name="image_embeddings"):
             self.client.create_collection(
                 collection_name="image_embeddings",
@@ -85,13 +85,18 @@ def example_search():
     image_path = "images/00000017_001.png"
     image = Image.open(image_path).convert("RGB")
 
-    # my_db = ImageDatabase(db_path="vectors.db")
-    my_db = ImageDatabase()
+    my_db = ImageDatabase(db_path="vectors.db")
+    # my_db = ImageDatabase()
     results = my_db.search(image)
+    res = {}
     for result in results[0]:
         a = result["entity"]
         a.pop("vector")
-        print(a)
+        return a
+        print(f"Server: {a}")
+        res[f"result_{len(res) + 1}"] = a
+
+    return res
 
 
 # def populate_db():
