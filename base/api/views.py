@@ -13,4 +13,8 @@ def getRoutes(request):
 
 def query(request):
     res = example_search()
-    return JsonResponse(res)
+    return JsonResponse(
+        {
+            "result": "oke",
+        }
+    )

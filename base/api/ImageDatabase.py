@@ -7,9 +7,6 @@ from pymilvus import MilvusClient
 
 
 class ImageDatabase:
-    # rel_path = "vectors.db"
-    # abs_path = os.path.abspath(rel_path)
-    # full_path = os.path.join(abs_path, "vectors.db")
 
     def __init__(self, db_path="vectors.db", device=None):
         if device is not None:
@@ -32,7 +29,6 @@ class ImageDatabase:
 
         # Vector DB
         self.client = MilvusClient(uri=db_path)
-        # self.client = MilvusClient(uri=self.abs_path)
         if not self.client.has_collection(collection_name="image_embeddings"):
             self.client.create_collection(
                 collection_name="image_embeddings",
@@ -62,13 +58,13 @@ class ImageDatabase:
         input = self.transforms(image).unsqueeze(0).to(self.device)
         embedding = self.feature_extractor(input).flatten()  # 1, 768 -> 768
 
-        data["vector"] = embedding.numpy()
+        data["vector"] = embedding.cpu().numpy()
         self.client.insert("image_embeddings", data=data)
 
     def search(self, image, topk=20):
         input = self.transforms(image).unsqueeze(0).to(self.device)
         with torch.no_grad():
-            embedding = self.feature_extractor(input).flatten().numpy()
+            embedding = self.feature_extractor(input).flatten().cpu().numpy()
 
         results = self.client.search(
             "image_embeddings",
@@ -88,13 +84,13 @@ def example_search():
     my_db = ImageDatabase(db_path="vectors.db")
     # my_db = ImageDatabase()
     results = my_db.search(image)
-    res = {}
+    res = []
     for result in results[0]:
         a = result["entity"]
         a.pop("vector")
-        return a
         print(f"Server: {a}")
-        res[f"result_{len(res) + 1}"] = a
+        # res[f"result_{len(res) + 1}"] = a
+        res.append(a)
 
     return res
 
