@@ -23,11 +23,13 @@ def query(request):
     if request.method == "POST":
         query_image = request.FILES["query_image"]
 
-        fs = FileSystemStorage()
-        saved_image = fs.save(query_image.name, query_image)
-        query_image_path = f"media/{saved_image}"
+        # fs = FileSystemStorage()
+        # saved_image = fs.save(query_image.name, query_image)
+        # print(f"Image path: {saved_image}")
+        # query_image_path = f"media/{saved_image}"
 
-        image = Image.open(query_image_path).convert("RGB")
+        # image = Image.open(query_image_path).convert("RGB")
+        image = Image.open(query_image).convert("RGB")
 
         my_db = ImageDatabase()
         results = my_db.search(image)

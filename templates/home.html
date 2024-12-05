@@ -4,19 +4,19 @@
 
 {% load static %}
 
-<div class="body">
-    <div class="container">
-        <div class="row">
-            <h1>Medical Image Retrieval</h1>
-        </div>
+<div class="container">
+    <header>
+        <h1>Medical Image Retrieval</h1>
+    </header>
+    <main>
         <form method="POST" id="submitForm">
             {% csrf_token %}
-            <div class="row">
+            <div class="row input-section">
                 <div class="col">
-                    <img src="{% static 'image/profile_placeholder.webp' %}" id="query-image" class="verify-image"
+                    <img src="{% static 'image/profile_placeholder.webp' %}" id="query-image" class="med-image"
                         alt="Query Image">
 
-                    <label for="input-query-image" class="label-image">Upload image</label>
+                    <label for="input-query-image" class="label-image">Upload Image</label>
 
                     <input type="file" accept="image/jpeg, image/png, image/jpg" id="input-query-image"
                         class="input-image" required>
@@ -28,9 +28,9 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <label for="verify-button" class="label-verify">Query</label>
+                    <label for="queryButton" class="label-button">Query</label>
 
-                    <input type="submit" id="verify-button" class="verify-button">
+                    <input type="submit" id="queryButton" class="input-button">
                 </div>
             </div>
         </form>
@@ -39,7 +39,7 @@
             <h2>Results</h2>
             <div id="resultsContainer"></div>
         </section>
-    </div>
+    </main>
 
 
     <aside id="sidebar" class="sidebar">
@@ -99,7 +99,7 @@
             //     <img src="https://via.placeholder.com/300x300.png?text=${result.image_filename}" alt="${result.image_filename}">
             // `;
             resultItem.innerHTML = `
-                <img src="/static/image/${result.image_filename}" alt="${result.image_filename}" class="verify-image">
+                <img src="/static/image/${result.image_filename}" alt="${result.image_filename}" class="med-image">
             `;
             resultItem.addEventListener('click', () => showDetails(result));
             resultsContainer.appendChild(resultItem);

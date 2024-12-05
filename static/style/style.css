@@ -19,6 +19,14 @@ body {
     padding: 20px;
 }
 
+header {
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+
 main {
     flex: 1;
     padding: 20px;
@@ -44,7 +52,20 @@ main {
     justify-content: center;
 }
 
-.verify-image {
+#queryButton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#queryButton:hover {
+    background-color: #0056b3;
+}
+
+.med-image {
     display: block;
     width: 250px;
     height: 250px;
@@ -53,26 +74,33 @@ main {
 }
 
 .label-image,
-.label-verify {
+.label-button {
     display: block;
-    width: 200px;
+    width: auto;
     color: #fff;
-    padding: 12px;
     margin: 10px auto;
+    padding: 10px 20px;
+    /* padding: 12px; */
     border-radius: 5px;
     cursor: pointer;
+    align-items: center;
 }
 
 .label-image {
-    background: #1355a0;
+    background-color: #007bff;
+    transition: background-color 0.3s ease;
 }
 
-.label-verify {
+.label-image:hover {
+    background-color: #0056b3;
+}
+
+.label-button {
     background: #f01d1d;
 }
 
 .input-image,
-.verify-button {
+.input-button {
     display: none;
 }
 
@@ -112,6 +140,7 @@ main {
     width: 100%;
     height: auto;
     display: block;
+    align-items: center;
 }
 
 .sidebar {
@@ -132,4 +161,15 @@ main {
 
 #imageDetails {
     margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .result-item {
+        width: calc(50% - 20px);
+    }
+
+    .sidebar {
+        width: 100%;
+        right: -100%;
+    }
 }
