@@ -8,14 +8,21 @@ body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f4f4f4;
+    background: #d1d1d1;
+}
+
+.wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5em;
 }
 
 .container {
     display: flex;
     flex-wrap: wrap;
     max-width: 1200px;
-    margin: 0 auto;
     padding: 20px;
 }
 
@@ -32,14 +39,6 @@ main {
     padding: 20px;
 }
 
-.input-section {
-    margin-bottom: 20px;
-}
-
-#imageInput {
-    margin-right: 10px;
-}
-
 .row {
     display: flex;
     flex-direction: row;
@@ -49,20 +48,10 @@ main {
 
 .col {
     display: inline;
-    justify-content: center;
 }
 
-#queryButton {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#queryButton:hover {
-    background-color: #0056b3;
+.input-section {
+    margin-bottom: 1em;
 }
 
 .med-image {
@@ -76,19 +65,18 @@ main {
 .label-image,
 .label-button {
     display: block;
-    width: auto;
+    width: max-content;
     color: #fff;
-    margin: 10px auto;
-    padding: 10px 20px;
-    /* padding: 12px; */
+    margin: 10px;
+    padding: 12px;
     border-radius: 5px;
     cursor: pointer;
     align-items: center;
+    transition: background-color 0.3s ease;
 }
 
 .label-image {
     background-color: #007bff;
-    transition: background-color 0.3s ease;
 }
 
 .label-image:hover {
@@ -97,6 +85,10 @@ main {
 
 .label-button {
     background: #f01d1d;
+}
+
+.label-button:hover {
+    background: #860000;
 }
 
 .input-image,

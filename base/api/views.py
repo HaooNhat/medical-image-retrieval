@@ -1,7 +1,8 @@
 from django.http import JsonResponse
-from .ImageDatabase import ImageDatabase, example_search
-from django.core.files.storage import FileSystemStorage
-from PIL import Image
+
+# from .ImageDatabase import ImageDatabase
+# from django.core.files.storage import FileSystemStorage
+# from PIL import Image
 
 
 def getRoutes(request):
@@ -13,13 +14,6 @@ def getRoutes(request):
 
 
 def query(request):
-    # res = example_search()
-    # return JsonResponse(
-    #     {
-    #         "results": res,
-    #     }
-    # )
-
     if request.method == "POST":
         query_image = request.FILES["query_image"]
 
@@ -29,18 +23,18 @@ def query(request):
         # query_image_path = f"media/{saved_image}"
 
         # image = Image.open(query_image_path).convert("RGB")
-        image = Image.open(query_image).convert("RGB")
+        # image = Image.open(query_image).convert("RGB")
 
-        my_db = ImageDatabase()
-        results = my_db.search(image)
+        # my_db = ImageDatabase()
+        # results = my_db.search(image)
         res = []
-        for result in results[0]:
-            a = result["entity"]
-            a.pop("vector")
-            print(f"Server: {a}")
-            res.append(a)
+        # for result in results[0]:
+        #     a = result["entity"]
+        #     a.pop("vector")
+        #     print(f"Server: {a}")
+        #     res.append(a)
 
-        fs.delete(query_image_path)
+        # fs.delete(query_image_path)
 
         return JsonResponse(
             {

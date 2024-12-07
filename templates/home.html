@@ -4,120 +4,53 @@
 
 {% load static %}
 
-<div class="container">
-    <header>
-        <h1>Medical Image Retrieval</h1>
-    </header>
-    <main>
-        <form method="POST" id="submitForm">
-            {% csrf_token %}
-            <div class="row input-section">
-                <div class="col">
-                    <img src="{% static 'image/profile_placeholder.webp' %}" id="query-image" class="med-image"
-                        alt="Query Image">
+<div class="wrapper">
+    <div class="container">
+        <header>
+            <h1>Medical Image Retrieval</h1>
+        </header>
+        <main>
+            <form method="POST" id="submitForm">
+                {% csrf_token %}
+                <div class="row input-section">
+                    <div class="col">
+                        <img src="{% static 'image/profile_placeholder.webp' %}" id="query-image" class="med-image"
+                            alt="Query Image">
 
-                    <label for="input-query-image" class="label-image">Upload Image</label>
+                        <label for="inputQueryImage" class="label-image">Upload Image</label>
 
-                    <input type="file" accept="image/jpeg, image/png, image/jpg" id="input-query-image"
-                        class="input-image" required>
+                        <input type="file" accept="image/jpeg, image/png, image/jpg" id="inputQueryImage"
+                            class="input-image" required>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <p id="error-message" class="error-message">Error message</p>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="queryButton" class="label-button">Query</label>
-
-                    <input type="submit" id="queryButton" class="input-button">
+                <div class="row">
+                    <p id="error-message" class="error-message">Error message</p>
                 </div>
-            </div>
-        </form>
+                <div class="row">
+                    <div class="col">
+                        <label for="inputQueryButton" class="label-button">Query</label>
 
-        <section class="results-section">
-            <h2>Results</h2>
-            <div id="resultsContainer"></div>
-        </section>
-    </main>
+                        <input type="submit" id="inputQueryButton" class="input-button">
+                    </div>
+                </div>
+            </form>
+
+            <section class="results-section">
+                <h2>Results</h2>
+                <div id="resultsContainer"></div>
+            </section>
+        </main>
 
 
-    <aside id="sidebar" class="sidebar">
-        <h2>Image Details</h2>
-        <div id="imageDetails"></div>
-    </aside>
+        <aside id="sidebar" class="sidebar">
+            <h2>Image Details</h2>
+            <div id="imageDetails"></div>
+        </aside>
 
+    </div>
 </div>
 
-<script>
-
-    let queryImage = document.getElementById("query-image");
-    let inputImage = document.getElementById("input-query-image");
-    const resultsContainer = document.getElementById('resultsContainer');
-    const sidebar = document.getElementById('sidebar');
-    const imageDetails = document.getElementById('imageDetails');
-
-    inputImage.onchange = () => {
-        queryImage.src = URL.createObjectURL(inputImage.files[0]);
-    }
-
-    let submitForm = document.getElementById("submitForm");
-    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-    let errorMessage = document.getElementById("error-message");
-
-    errorMessage.style.opacity = 0;
-
-    submitForm.addEventListener("submit", e => {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('query_image', inputImage.files[0]);
-
-        fetch("/api/query", {
-            method: "POST",
-            headers: {
-                'X-CSRFToken': csrfToken,
-            },
-            body: formData,
-        })
-            .then(response => response.json())
-            .then(data => {
-                // console.log("Client: " + data)
-                displayResults(data["results"]);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    })
-
-    function displayResults(results) {
-        resultsContainer.innerHTML = '';
-        results.forEach(result => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-            // resultItem.innerHTML = `
-            //     <img src="https://via.placeholder.com/300x300.png?text=${result.image_filename}" alt="${result.image_filename}">
-            // `;
-            resultItem.innerHTML = `
-                <img src="/static/image/${result.image_filename}" alt="${result.image_filename}" class="med-image">
-            `;
-            resultItem.addEventListener('click', () => showDetails(result));
-            resultsContainer.appendChild(resultItem);
-        });
-    }
-
-    function showDetails(result) {
-        imageDetails.innerHTML = `
-            <h3>${result.image_filename}</h3>
-            <p>Labels: ${result.labels}</p>
-            <p>Patient ID: ${result.patient_id}</p>
-            <p>Age: ${result.patient_age}</p>
-            <p>Gender: ${result.patient_gender}</p>
-            <p>View Position: ${result.view_position}</p>
-        `;
-        sidebar.classList.add('active');
-    }
-
-</script>
+<script src="{% static 'js/script.js' %}"></script>
 
 {% endblock content %}
