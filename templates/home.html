@@ -13,10 +13,12 @@
             <form method="POST" id="submitForm">
                 {% csrf_token %}
                 <div class="row input-section">
-                    <div class="col">
-                        <img src="{% static 'image/profile_placeholder.webp' %}" id="query-image" class="med-image"
-                            alt="Query Image">
+                    <img src="{% static 'image/profile_placeholder.webp' %}" id="query-image" class="med-image"
+                        alt="Query Image">
+                </div>
 
+                <div class="row">
+                    <div class="col">
                         <label for="inputQueryImage" class="label-image">Upload Image</label>
 
                         <input type="file" accept="image/jpeg, image/png, image/jpg" id="inputQueryImage"
@@ -27,6 +29,7 @@
                 <div class="row">
                     <p id="error-message" class="error-message">Error message</p>
                 </div>
+
                 <div class="row">
                     <div class="col">
                         <label for="inputQueryButton" class="label-button">Query</label>

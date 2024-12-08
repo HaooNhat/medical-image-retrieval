@@ -43,11 +43,12 @@ main {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    padding: 10px;
+    padding: 5px;
 }
 
 .col {
     display: inline;
+    justify-content: center;
 }
 
 .input-section {
@@ -56,9 +57,8 @@ main {
 
 .med-image {
     display: block;
-    width: 250px;
-    height: 250px;
-    margin: 20px;
+    max-width: 320px;
+    max-height: 320px;
     border-radius: 10px;
 }
 
@@ -97,9 +97,8 @@ main {
 }
 
 .error-message {
-    display: block;
+    display: none;
     color: red;
-    opacity: 0;
 }
 
 .results-section {
@@ -112,15 +111,18 @@ main {
 #resultsContainer {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-around;
     gap: 20px;
 }
 
 .result-item {
-    width: calc(33.333% - 20px);
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    width: auto;
+    max-width: 300px;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
+    justify-items: center;
     transition: transform 0.3s ease;
+    margin: 10px;
 }
 
 .result-item:hover {
@@ -132,7 +134,6 @@ main {
     width: 100%;
     height: auto;
     display: block;
-    align-items: center;
 }
 
 .sidebar {
