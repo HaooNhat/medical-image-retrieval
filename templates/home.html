@@ -1,57 +1,73 @@
-{% extends "layout.html" %}
-
-{% block content %}
-
-{% load static %}
+{% extends "layout.html" %} {% block content %} {% load static %}
 
 <div class="wrapper">
-    <div class="container">
-        <header>
-            <h1>Medical Image Retrieval</h1>
-        </header>
-        <main>
-            <form method="POST" id="submitForm">
-                {% csrf_token %}
-                <div class="row input-section">
-                    <img src="{% static 'image/profile_placeholder.webp' %}" id="query-image" class="med-image"
-                        alt="Query Image">
-                </div>
+  <div class="container">
+    <header>
+      <h1>Medical Image Retrieval</h1>
+    </header>
+    <main>
+      <form method="POST" id="submitForm">
+        {% csrf_token %}
+        <div class="row input-section">
+          <div class="col">
+            <h3>Query Image</h3>
+            <img
+              src="{% static 'image/scan_adjusted_image.jpg' %}"
+              id="query-image"
+              class="med-image"
+              alt="Query Image"
+            />
+          </div>
+          <div id="comparison-image" class="col comparison-item">
+            <h3>Selected Image</h3>
+            <img
+              id="selectedImage"
+              src=""
+              alt="Selected Image"
+              class="med-image"
+            />
+          </div>
+        </div>
 
-                <div class="row">
-                    <div class="col">
-                        <label for="inputQueryImage" class="label-image">Upload Image</label>
+        <div class="row">
+          <p id="error-message" class="error-message">Error message</p>
+        </div>
 
-                        <input type="file" accept="image/jpeg, image/png, image/jpg" id="inputQueryImage"
-                            class="input-image" required>
-                    </div>
-                </div>
+        <div class="row">
+          <div class="col">
+            <label for="inputQueryImage" class="label-image"
+              >Upload Image</label
+            >
 
-                <div class="row">
-                    <p id="error-message" class="error-message">Error message</p>
-                </div>
+            <input
+              type="file"
+              accept="image/jpeg, image/png, image/jpg"
+              id="inputQueryImage"
+              class="input-image"
+              required
+            />
+          </div>
 
-                <div class="row">
-                    <div class="col">
-                        <label for="inputQueryButton" class="label-button">Query</label>
+          <div class="col">
+            <label for="inputQueryButton" class="label-button">Query</label>
 
-                        <input type="submit" id="inputQueryButton" class="input-button">
-                    </div>
-                </div>
-            </form>
+            <input type="submit" id="inputQueryButton" class="input-button" />
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
 
-            <section class="results-section">
-                <h2>Results</h2>
-                <div id="resultsContainer"></div>
-            </section>
-        </main>
+  <section class="results-section">
+    <h2>Results</h2>
+    <div id="resultsContainer"></div>
+  </section>
 
-
-        <aside id="sidebar" class="sidebar">
-            <h2>Image Details</h2>
-            <div id="imageDetails"></div>
-        </aside>
-
-    </div>
+  <aside id="sidebar" class="sidebar">
+    <button id="closeSidebar" class="close-button">&times;</button>
+    <h2>Image Details</h2>
+    <div id="imageDetails"></div>
+  </aside>
 </div>
 
 <script src="{% static 'js/script.js' %}"></script>
