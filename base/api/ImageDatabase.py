@@ -1,14 +1,19 @@
 import os
+import csv
+import cv2
 import timm
 import torch
+import kagglehub
 import numpy as np
 from PIL import Image
+from glob import glob
 from pymilvus import MilvusClient
 
+import albumentations as albu
+from albumentations.pytorch import ToTensorV2
 
 class ImageDatabase:
-
-    def __init__(self, db_path="vectors.db", device=None):
+    def __init__(self, db_path="vectors.db", model_path = "model.pt", device=None):
         if device is not None:
             self.device = device
         else:
@@ -16,16 +21,23 @@ class ImageDatabase:
 
         # Feature extractor
         self.feature_extractor = timm.create_model(
-            "maxvit_base_tf_384.in21k_ft_in1k",
+            "tf_efficientnetv2_l.in21k",
             pretrained=True,
             num_classes=0,
         )
+        if model_path != None:
+            model_weights = torch.load(model_path, weights_only=True)
+            self.feature_extractor.load_state_dict(model_weights)
+
         self.feature_extractor.eval()
         self.feature_extractor = self.feature_extractor.to(self.device)
 
-        # Image pre-processor
-        data_config = timm.data.resolve_model_data_config(self.feature_extractor)
-        self.transforms = timm.data.create_transform(**data_config, is_training=False)
+        # Image pre-processor 
+        image_size = 480   
+        self.transform = albu.Compose([
+            albu.Resize(image_size, image_size, interpolation=cv2.INTER_LANCZOS4, always_apply=True),
+            ToTensorV2()  # Ensure output is a PyTorch tensor
+        ])
 
         # Vector DB
         self.client = MilvusClient(uri=db_path)
@@ -33,7 +45,7 @@ class ImageDatabase:
             self.client.create_collection(
                 collection_name="image_embeddings",
                 vector_field_name="vector",
-                dimension=768,
+                dimension=1280,
                 auto_id=True,
                 enable_dynamic_field=True,
                 metric_type="COSINE",
@@ -55,16 +67,35 @@ class ImageDatabase:
             )
 
     def insert(self, image, data):
-        input = self.transforms(image).unsqueeze(0).to(self.device)
-        embedding = self.feature_extractor(input).flatten()  # 1, 768 -> 768
+        image = np.array(image, dtype=np.float32) / 255
+        input = self.transform(image=image)['image']
+        input = input.unsqueeze(0).to(self.device)
+        with torch.no_grad():
+            embedding = self.feature_extractor.forward_features(input).flatten().cpu().numpy()  # -> 1280
 
-        data["vector"] = embedding.cpu().numpy()
+        data["vector"] = embedding
         self.client.insert("image_embeddings", data=data)
 
-    def search(self, image, topk=20):
-        input = self.transforms(image).unsqueeze(0).to(self.device)
+    def insert_batch(self, image_list, data_list):
+        new_image_list = [np.array(image, dtype=np.float32) / 255 for image in image_list]
+        input_list = [self.transform(image=image)['image'] for image in new_image_list]
+        input_batch = torch.stack(input_list).to(self.device)
+
         with torch.no_grad():
-            embedding = self.feature_extractor(input).flatten().cpu().numpy()
+            embeddings = self.feature_extractor.forward_features(input_batch).cpu().numpy()
+        
+        for i, data in enumerate(data_list):
+            data["vector"] = embeddings[i].flatten()
+
+        self.client.insert("image_embeddings", data=data_list)
+
+
+    def search(self, image, topk=20):
+        image = np.array(image, dtype=np.float32) / 255
+        input = self.transform(image=image)['image']
+        input = input.unsqueeze(0).to(self.device)
+        with torch.no_grad():
+            embedding = self.feature_extractor.forward_features(input).flatten().cpu().numpy()
 
         results = self.client.search(
             "image_embeddings",
@@ -77,44 +108,95 @@ class ImageDatabase:
         return results
 
 
-def example_search():
-    image_path = "images/00000017_001.png"
-    image = Image.open(image_path).convert("RGB")
 
-    my_db = ImageDatabase(db_path="vectors.db")
-    # my_db = ImageDatabase()
-    results = my_db.search(image)
-    res = []
-    for result in results[0]:
-        a = result["entity"]
-        a.pop("vector")
-        print(f"Server: {a}")
-        # res[f"result_{len(res) + 1}"] = a
-        res.append(a)
+# if __name__ == "__main__":
+#     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+#     print(f'Running on device: {device}')
 
-    return res
+#     data_path = kagglehub.dataset_download("nih-chest-xrays/data")
+#     print("Path to dataset files:", data_path)
 
 
-# def populate_db():
-#     with open('/kaggle/input/sample/sample_labels.csv', mode ='r') as file:
+#     # Load image names
+#     image_list = []
+#     test_list_path = os.path.join(data_path, "test_list.txt")
+#     with open(test_list_path, mode ='r') as fin:
+#         for image_name in fin:
+#             if image_name[-1] == '\n':
+#                 image_name = image_name[:-1]
+#             image_list.append(image_name)
+    
+
+#     # Split images to insert to db and images to evaluate
+#     rng = np.random.default_rng(seed=42)
+#     shuffled_indices = rng.permutation(len(image_list))
+#     half = len(image_list) // 2
+
+#     train_set = set()
+#     test_set = set()
+#     for i in range(len(image_list)):
+#         image_name = image_list[ shuffled_indices[i] ]
+#         if i <= half:
+#             train_set.add(image_name)
+#         else:
+#             test_set.add(image_name)
+
+
+#     # Prepare image paths
+#     image_paths = {}
+#     img_path_template = os.path.join(data_path, "*/images/*.png")
+#     paths = glob(img_path_template)
+#     for path in paths:
+#         image_name = path.split('/')[-1]
+#         image_paths[image_name] = path
+
+#     # Create vector database
+#     my_db = ImageDatabase(model_path="/root/code/results6/bestmodel_epoch27_loss0.16240.pt", device=device)
+
+#     # Populate database
+#     csv_path = os.path.join(data_path, "Data_Entry_2017.csv")
+#     with open(csv_path, mode ='r') as file:
 #         csv_file = csv.reader(file)
 #         header = True
-#         cnt = 0
-#         for cols in csv_file:
+#         progress = 0
+
+
+#         image_list = []
+#         data_list = []
+#         for row in csv_file:
 #             if header:
 #                 header = False
 #                 continue
-#             image_path = os.path.join("/kaggle/input/sample/sample/sample/images", cols[0])
+
+#             image_name = row[0]
+#             if image_name not in train_set:
+#                 continue
+
+#             image_path = image_paths[image_name]
 #             image = Image.open(image_path).convert("RGB")
+
 #             data = {
-#                 "image_filename": cols[0],
-#                 "labels":cols[1],
-#                 "patient_id": cols[3],
-#                 "patient_age": int(cols[4][:-1]),
-#                 "patient_gender": cols[5],
-#                 "view_position": cols[6]
+#                 "image_filename": image_name,
+#                 "labels":row[1],
+#                 "patient_id": row[3],
+#                 "patient_age": row[4][:-1],
+#                 "patient_gender": row[5],
+#                 "view_position": row[6]
 #             }
-#             my_db.insert(image, data)
-#             cnt += 1
-#             print(f"{cnt}/5606", end='\r')
-#         print('')
+
+#             if len(image_list) < 256:
+#                 image_list.append(image)
+#                 data_list.append(data)
+#             else:
+#                 my_db.insert_batch(image_list, data_list)
+#                 image_list = []
+#                 data_list = []
+
+#             progress += 1
+#             print(f"{progress}", end='\r')
+
+#         if len(image_list) > 0:
+#             my_db.insert_batch(image_list, data_list)
+#             print(f"{progress + 1}")
+#         else:
+#             print('')
