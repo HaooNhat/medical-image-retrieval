@@ -8,12 +8,12 @@ body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
   color: #333;
-  background: #d1d1d1;
+  background: #999;
 }
 
 .wrapper {
-  width: 100%;
   display: flex;
+  width: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -24,6 +24,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   max-width: 1200px;
+  padding: 10px;
+  background-color: #fff;
 }
 
 header {
@@ -104,11 +106,16 @@ main {
 }
 
 .results-section {
+  display: none;
   width: 80%;
   background-color: #fff;
   border-radius: 5px;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.results-section.active {
+  display: block;
 }
 
 #resultsContainer {
@@ -132,6 +139,10 @@ main {
 .result-item:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.result-item p {
+  font-weight: 700;
 }
 
 .result-item img {

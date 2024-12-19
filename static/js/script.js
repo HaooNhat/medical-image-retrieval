@@ -228,15 +228,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function displayResults(results) {
+    document.getElementsByClassName("results-section")[0].classList.add("active");
     resultsContainer.innerHTML = "";
     results.forEach((result, idx) => {
       const resultItem = document.createElement("div");
       resultItem.className = "result-item";
       resultItem.innerHTML = `
     <p>${idx + 1}</p>
-                <img src="/static/image/${result.image_filename}" alt="${
-        result.image_filename
-      }" class="result-image">
+                <img src="/static/image/${result.image_filename}" alt="${result.image_filename
+        }" class="result-image">
             `;
       resultItem.addEventListener("click", () => showDetails(result));
       resultsContainer.appendChild(resultItem);
