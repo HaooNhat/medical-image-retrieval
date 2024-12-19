@@ -12,6 +12,28 @@ from pymilvus import MilvusClient
 import albumentations as albu
 from albumentations.pytorch import ToTensorV2
 
+
+class CustomModel(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+        self.base_model = timm.create_model(
+            "tf_efficientnetv2_l.in21k",
+            pretrained=True,
+            num_classes=0,
+        )
+        # self.classifier_head = torch.nn.Linear(1280, n_classes)
+        
+
+    def forward(self, x):
+        pooled_features = self.base_model(x)
+        # output = self.classifier_head(pooled_features)
+        # return output
+        return pooled_features
+
+    def forward_features(self, x):
+        return self.base_model(x)
+
 class ImageDatabase:
     def __init__(self, db_path="vectors.db", model_path = "model.pt", device=None):
         if device is not None:
@@ -20,11 +42,7 @@ class ImageDatabase:
             self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Feature extractor
-        self.feature_extractor = timm.create_model(
-            "tf_efficientnetv2_l.in21k",
-            pretrained=True,
-            num_classes=0,
-        )
+        self.feature_extractor = CustomModel()
         if model_path != None:
             model_weights = torch.load(model_path, weights_only=True)
             self.feature_extractor.load_state_dict(model_weights)
