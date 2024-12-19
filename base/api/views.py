@@ -1,8 +1,10 @@
 from django.http import JsonResponse
 
-# from .ImageDatabase import ImageDatabase
-# from django.core.files.storage import FileSystemStorage
-# from PIL import Image
+from .ImageDatabase import ImageDatabase
+from PIL import Image
+
+from .const import results
+from .utils import find_image_from_cloudinary
 
 
 def getRoutes(request):
@@ -17,24 +19,26 @@ def query(request):
     if request.method == "POST":
         query_image = request.FILES["query_image"]
 
-        # fs = FileSystemStorage()
-        # saved_image = fs.save(query_image.name, query_image)
-        # print(f"Image path: {saved_image}")
-        # query_image_path = f"media/{saved_image}"
-
-        # image = Image.open(query_image_path).convert("RGB")
         # image = Image.open(query_image).convert("RGB")
 
-        # my_db = ImageDatabase()
+        # my_db = ImageDatabase(model_path="models/model.pt")
         # results = my_db.search(image)
         res = []
+        # real version
         # for result in results[0]:
         #     a = result["entity"]
         #     a.pop("vector")
-        #     print(f"Server: {a}")
         #     res.append(a)
-
-        # fs.delete(query_image_path)
+        #     image_url = find_image_from_cloudinary(a["image_filename"])
+        #     res[-1]["image_url"] = image_url
+        #     print(f"Server: {a}")
+        
+        # test version:
+        for result in results:
+            image_url = find_image_from_cloudinary(result["image_filename"])
+            res.append(result)
+            res[-1]["image_url"] = image_url
+            # print(res[-1])
 
         return JsonResponse(
             {

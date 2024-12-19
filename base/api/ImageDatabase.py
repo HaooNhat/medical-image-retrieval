@@ -3,7 +3,7 @@ import csv
 import cv2
 import timm
 import torch
-import kagglehub
+# import kagglehub
 import numpy as np
 from PIL import Image
 from glob import glob
