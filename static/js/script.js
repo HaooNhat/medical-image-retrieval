@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((data) => {
         // console.log("Client: " + data)
         displayResults(data["results"]);
+        createChart(data["probs"]);
       })
       .catch((error) => {
         console.error(error);
@@ -84,9 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedImage.src = `${result.image_url}`;
     imageDetails.innerHTML = `
             <h3>${result.image_filename}</h3>
-            <p>Labels: ${result.labels}</p>
+            <p>Labels:</p>
+            <ul>
+            ${result.labels
+              .split("|") // Split multiple labels separated by '|'
+              .map((label) => `<li>${label.replace(/_/g, " ")}</li>`) // Replace '_' with ' ' and wrap in <li>
+              .join("")} <!-- Join the list items into the HTML -->
+            </ul>
             <p>Patient ID: ${result.patient_id}</p>
-            <p>Age: ${result.patient_age}</p>
+            <p>Age: ${Number(result.patient_age)}</p>
             <p>Gender: ${result.patient_gender}</p>
             <p>View Position: ${result.view_position}</p>
         `;
@@ -110,4 +117,72 @@ document.addEventListener("DOMContentLoaded", () => {
       closeSidebar();
     }
   });
+
+  function createChart(data) {
+    const labels = Object.keys(data);
+    const percentages = Object.values(data);
+
+    // Generate a unique color for each label
+    // const colors = generateColors(labels.length);
+
+    // // Function to generate colors
+    // function generateColors(numColors) {
+    //   const colors = [];
+    //   for (let i = 0; i < numColors; i++) {
+    //     const r = Math.floor(Math.random() * 256);
+    //     const g = Math.floor(Math.random() * 256);
+    //     const b = Math.floor(Math.random() * 256);
+    //     colors.push(`rgb(${r}, ${g}, ${b})`);
+    //   }
+    //   return colors;
+    // }
+
+    // Create the chart
+    const ctx = document.getElementById("diseaseChart").getContext("2d");
+    new Chart(ctx, {
+      type: "pie", // Use pie chart
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Percentage",
+            data: percentages,
+            backgroundColor: [
+              "blue",
+              "orange",
+              "green",
+              "red",
+              "purple",
+              "cyan",
+              "pink",
+              "yellow",
+              "brown",
+              "lime",
+              "teal",
+              "magenta",
+              "gold",
+              "indigo",
+              "violet",
+            ],
+            borderColor: "white",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: "top", // Position legend at the top
+            labels: {
+              font: {
+                size: 14, // Adjust font size for better visibility
+              },
+            },
+          },
+        },
+        responsive: true,
+        maintainAspectRatio: false, // Allow the chart to resize
+      },
+    });
+  }
 });

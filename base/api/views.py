@@ -4,7 +4,7 @@ from .ImageDatabase import ImageDatabase
 from PIL import Image
 
 # from .const import results
-from .utils import find_image_from_cloudinary
+from .utils import find_image_from_cloudinary, calculate_probs
 
 
 def getRoutes(request):
@@ -39,9 +39,12 @@ def query(request):
         #     res.append(result)
         #     res[-1]["image_url"] = image_url
             # print(res[-1])
+            
+        probs = calculate_probs(res)
 
         return JsonResponse(
             {
                 "results": res,
+                "probs": probs,
             }
         )

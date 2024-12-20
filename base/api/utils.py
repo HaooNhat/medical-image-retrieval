@@ -23,6 +23,7 @@ def remove_extension(filename):
     """
     return filename.rsplit('.', 1)[0]
 
+
 def find_image_from_cloudinary(filename):
     try:
         # Search for the image by public_id
@@ -30,3 +31,26 @@ def find_image_from_cloudinary(filename):
         return response["secure_url"]
     except Exception as e:
         print(f"Image not found: {e}")
+
+
+def calculate_probs(results):
+    # Initialize a dictionary to count occurrences of each disease
+    label_counts = {}
+
+    # Iterate through each record
+    for record in results:
+        labels = record["labels"]
+        # Split multiple labels and normalize them
+        diseases = [label.replace("_", " ") for label in labels.split("|")]
+        for disease in diseases:
+            label_counts[disease] = label_counts.get(disease, 0) + 1
+
+    # Calculate percentages
+    total_records = len(results)
+    total_disease_instances = sum(label_counts.values())  # Total diseases (may exceed records)
+    label_percentages = {
+        label: (count / total_disease_instances) * 100 for label, count in label_counts.items()
+    }
+    
+    # print(label_percentages)
+    return label_percentages
