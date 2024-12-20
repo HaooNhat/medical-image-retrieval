@@ -5,12 +5,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.getElementById("sidebar");
   const imageDetails = document.getElementById("imageDetails");
   const closeSidebarButton = document.getElementById("closeSidebar");
-  const queryCompareImage = document.getElementById("queryImage");
   const selectedImage = document.getElementById("selectedImage");
+  // const loadingSpinner = document.getElementById("loadingSpinner");
+  const loadingOverlay = document.getElementById("loadingOverlay");
+  let currentItem = null;
 
   inputImage.onchange = () => {
     queryImage.src = URL.createObjectURL(inputImage.files[0]);
-    queryCompareImage.src = queryImage.src;
   };
 
   const submitForm = document.getElementById("submitForm");
@@ -23,6 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   submitForm.addEventListener("submit", (e) => {
     e.preventDefault();
+
+    // loadingSpinner.style.display = "inline-block";
+    loadingOverlay.style.display = "flex";
 
     const formData = new FormData();
     formData.append("query_image", inputImage.files[0]);
@@ -41,6 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch((error) => {
         console.error(error);
+      })
+      .finally(() => {
+        // loadingSpinner.style.display = "none";
+        loadingOverlay.style.display = "none";
       });
   });
 
@@ -58,13 +66,20 @@ document.addEventListener("DOMContentLoaded", () => {
         result.image_filename
       }" class="result-image">
             `;
-      resultItem.addEventListener("click", () => showDetails(result));
+      resultItem.addEventListener("click", () => {
+        if (currentItem !== null) {
+          currentItem.classList.remove("active");
+        }
+        currentItem = resultItem;
+        showDetails(result);
+      });
       resultsContainer.appendChild(resultItem);
       resultsContainer.style.marginTop = "20px";
     });
   }
 
   function showDetails(result) {
+    currentItem.classList.add("active");
     document.getElementById("comparison-image").classList.add("active");
     selectedImage.src = `${result.image_url}`;
     imageDetails.innerHTML = `
@@ -79,6 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function closeSidebar() {
+    if (currentItem !== null) {
+      currentItem.classList.remove("active");
+      currentItem = null;
+    }
     sidebar.classList.remove("active");
     document.getElementById("comparison-image").classList.remove("active");
   }

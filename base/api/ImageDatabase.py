@@ -44,7 +44,7 @@ class ImageDatabase:
         # Feature extractor
         self.feature_extractor = CustomModel()
         if model_path != None:
-            model_weights = torch.load(model_path, weights_only=True)
+            model_weights = torch.load(model_path, map_location=torch.device(self.device), weights_only=True)
             self.feature_extractor.load_state_dict(model_weights)
 
         self.feature_extractor.eval()
