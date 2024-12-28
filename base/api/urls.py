@@ -4,4 +4,5 @@ from . import views
 urlpatterns = [
     path("", views.getRoutes),
     path("query", views.query),
+    path("upload", views.upload)
 ]

@@ -1,0 +1,104 @@
+{% extends 'home.html' %} {% block title %}Upload Image - Image Query
+System{%endblock %} {% block content %} {% load static %}
+
+<div class="container">
+  <header>
+    <h1>Upload Image and Data</h1>
+  </header>
+  <main>
+    <form id="uploadForm" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col">
+          <div class="form-group col">
+            <h3>Preview Image</h3>
+            <img
+              src="{% static 'image/scan_adjusted_image.jpg' %}"
+              id="upload-image"
+              class="med-image"
+              alt="Upload Image"
+            />
+            <label for="imageFile" class="label-image">Image File:</label>
+            <input
+              type="file"
+              id="imageFile"
+              name="image_file"
+              class="input-image"
+              accept="image/*"
+              required
+            />
+          </div>
+        </div>
+        <div class="col">
+          <!-- <div class="form-group">
+          <label for="imageFilename">Image Filename:</label>
+          <input
+            type="text"
+            id="imageFilename"
+            name="image_filename"
+            required
+            />
+          </div> -->
+          <div class="form-group">
+            <label for="labels"
+              >Labels (ex: "No Finding" or "Atelectasis, Infiltration"):</label
+            >
+            <input
+              type="text"
+              id="labels"
+              name="labels"
+              class="row input-text"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="patientId">Patient ID:</label>
+            <input
+              type="text"
+              id="patientId"
+              name="patient_id"
+              class="row input-text"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="patientAge">Patient Age:</label>
+            <input
+              type="number"
+              id="patientAge"
+              name="patient_age"
+              class="row input-text"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="patientGender">Patient Gender:</label>
+            <select id="patientGender" name="patient_gender" required>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="viewPosition">View Position (ex: AP):</label>
+            <input
+              type="text"
+              id="viewPosition"
+              name="view_position"
+              class="row input-text"
+              required
+            />
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <button type="submit">Upload</button>
+      </div>
+    </form>
+    <div id="uploadMessage" class="row"></div>
+  </main>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script src="{% static '/js/upload.js' %}"></script>
+{% endblock %}

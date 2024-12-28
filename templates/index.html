@@ -1,0 +1,74 @@
+{% extends 'home.html' %} {% block content %} {% load static %}
+
+<div class="container">
+  <header>
+    <h1>Medical Image Retrieval</h1>
+  </header>
+  <main>
+    <form method="POST" id="submitForm">
+      {% csrf_token %}
+      <div class="row input-section">
+        <div class="col">
+          <h3>Query Image</h3>
+          <img
+            src="{% static 'image/scan_adjusted_image.jpg' %}"
+            id="query-image"
+            class="med-image"
+            alt="Query Image"
+          />
+        </div>
+        <div id="comparison-image" class="col comparison-item">
+          <h3>Selected Image</h3>
+          <img
+            id="selectedImage"
+            src=""
+            alt="Selected Image"
+            class="med-image"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <p id="error-message" class="error-message">Error message</p>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="inputQueryImage" class="label-image">Upload Image</label>
+
+          <input
+            type="file"
+            accept="image/jpeg, image/png, image/jpg"
+            id="inputQueryImage"
+            class="input-image"
+            required
+          />
+        </div>
+
+        <div class="col">
+          <label for="inputQueryButton" class="label-button">Query</label>
+
+          <input type="submit" id="inputQueryButton" class="input-button" />
+        </div>
+      </div>
+    </form>
+  </main>
+</div>
+
+<div id="chart-container">
+  <canvas id="diseaseChart"></canvas>
+</div>
+<section class="results-section">
+  <h2>Results</h2>
+  <div id="resultsContainer"></div>
+</section>
+
+<aside id="sidebar" class="sidebar">
+  <button id="closeSidebar" class="close-button">&times;</button>
+  <h2>Image Details</h2>
+  <div id="imageDetails"></div>
+</aside>
+
+{% endblock %} {% block extra_js %}
+<script src="{% static '/js/script.js' %}"></script>
+{% endblock %}

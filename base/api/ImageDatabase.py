@@ -85,14 +85,22 @@ class ImageDatabase:
             )
 
     def insert(self, image, data):
+        print("Check 1")
         image = np.array(image, dtype=np.float32) / 255
+        print("Check 2")
         input = self.transform(image=image)['image']
+        print("Check 3")
         input = input.unsqueeze(0).to(self.device)
+        print("Check 4")
         with torch.no_grad():
+            print("Check 5")
             embedding = self.feature_extractor.forward_features(input).flatten().cpu().numpy()  # -> 1280
 
+        print("Check 6")
         data["vector"] = embedding
+        print("Check 7")
         self.client.insert("image_embeddings", data=data)
+        print("Check 8")
 
     def insert_batch(self, image_list, data_list):
         new_image_list = [np.array(image, dtype=np.float32) / 255 for image in image_list]

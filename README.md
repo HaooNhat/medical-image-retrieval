@@ -13,3 +13,9 @@ Then run the following command:
 ```bash
 python manage.py runserver
 ```
+
+## Database
+
+In this project, we use the Cloudinary database to host the image online for widely access.
+
+![Cloudinary Database Preview](./Cloudinary_db.png)

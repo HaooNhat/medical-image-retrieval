@@ -1,10 +1,15 @@
 import os
 
 import cloudinary.api
+import cloudinary.uploader
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+import random
+
+import re
 
 # Configure Cloudinary
 cloudinary.config(
@@ -13,6 +18,17 @@ cloudinary.config(
     api_secret=os.getenv("API_SECRET")   # Replace with your Cloudinary API secret
 )
 
+def generate_custom_id():
+    return random.randint(10**17, 10**18 - 1)
+
+def transform_text(text):
+    # Remove redundant spaces
+    text = re.sub(r'\s+', ' ', text).strip()
+    # Replace ", " with "|"
+    text = text.replace(", ", "|")
+    # Replace " " with "_"
+    text = text.replace(" ", "_")
+    return text
 
 def remove_extension(filename):
     """
@@ -31,6 +47,23 @@ def find_image_from_cloudinary(filename):
         return response["secure_url"]
     except Exception as e:
         print(f"Image not found: {e}")
+        
+
+def upload_single_image(image_file):
+    try:
+        # Upload the image to Cloudinary
+        response = cloudinary.uploader.upload(
+            image_file,
+            folder="my_medical_images",  # Target folder in Cloudinary
+            use_filename=True,         # Retain the original filename
+            unique_filename=False      # Avoid adding random characters
+        )
+        secure_url = response["secure_url"]
+        print(f"Uploaded: {image_file.name} -> {secure_url}")
+        return secure_url
+    except Exception as e:
+        print(f"Failed to upload {image_file.name}: {e}")
+        raise  # Re-raise the exception for proper error handling
 
 
 def calculate_probs(results):
